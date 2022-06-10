@@ -1,0 +1,8 @@
+name: http3
+version: 0.1.0
+
+dependencies:
+- base
+
+library:
+  source-dirs: src
