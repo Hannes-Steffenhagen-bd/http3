@@ -4,24 +4,32 @@
     flake-utils.url = "github:numtide/flake-utils";
   };
 
+  # see https://serokell.io/blog/practical-nix-flakes
+  # note that the `inputsFrom` in `mkShell` is a bit different
+  # because to get the *real* build dependencies set up correctly
+  # we need the .env property of the package - not sure what's up with that
   outputs = { self, nixpkgs, flake-utils }:
-    flake-utils.lib.eachDefaultSystem(system:
+    flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = nixpkgs.legacyPackages.${system};
         haskellPackages = pkgs.haskellPackages;
-      in {
-        packages.http3 =
-          haskellPackages.callCabal2nix "http3" self rec { };
+        packageName = "http3";
+      in
+        {
+          packages.${packageName} =
+                haskellPackages.callCabal2nix packageName self rec { };
 
-        defaultPackage = self.packages.${system}.http3;
+          defaultPackage = self.packages.${system}.${packageName};
 
-        devShell = pkgs.mkShell {
-          buildInputs = with haskellPackages;
-            [ cabal-install
-              haskell-language-server
-            ];
-          inputsFrom = builtins.attrValues self.packages.${system};
-        };
-      }
+          devShell = pkgs.mkShell
+          {
+            buildInputs = with haskellPackages;
+              [ cabal-install
+                hoogle
+                haskell-language-server
+              ];
+            inputsFrom = [self.packages.${system}.${packageName}.env];
+          };
+        }
     );
 }

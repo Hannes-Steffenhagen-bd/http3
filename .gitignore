@@ -1,2 +1,4 @@
 *.cabal
 dist-newstyle/
+result
+cabal.project.local
