@@ -1,0 +1,6 @@
+#+TITLE: HTTP3
+
+* 👷‍♀️ Under construction
+
+This is supposed to be an implementation (of a subset of) [[https://datatracker.ietf.org/doc/rfc9114/][HTTP3]] when it's done.
+Right now it's not really anything.
