@@ -3,6 +3,16 @@ version: 0.1.0
 
 dependencies:
 - base
+- network
+- bytestring
+- text
+- vector
+
+default-extensions:
+- BinaryLiterals
+- DerivingStrategies
+- GeneralizedNewtypeDeriving
+- ViewPatterns
 
 library:
   source-dirs: src
