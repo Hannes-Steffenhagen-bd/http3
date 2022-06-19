@@ -1,6 +1,40 @@
 #+TITLE: HTTP3
 
 * 👷‍♀️ Under construction
+  This is supposed to be an implementation (of a subset of) [[https://datatracker.ietf.org/doc/rfc9114/][HTTP3]] when it's done.
+  Right now it's not really anything.
 
-This is supposed to be an implementation (of a subset of) [[https://datatracker.ietf.org/doc/rfc9114/][HTTP3]] when it's done.
-Right now it's not really anything.
+* Developing
+  This project has a [[https://nixos.wiki/wiki/Flakes][Nix Flake]] setup. Using this is optional, but recommended if
+  you don't already have a preferred way to develop haskell projects (note that
+  this only works on MacOS and Linux, possibly BSD(?) - on windows you'll want
+  to use something like ghcup instead unless you use WSL2).
+
+** Step by Step guide
+*** Install Nix
+    Follow the guide for your platform from the [[https://nixos.org/download.html][official Nix documentation]].
+*** Enable Nix flakes support
+    At the time of writing this, flakes are still considered an experimental
+    feature so you need to enable them separately.
+
+    Head over to your ~~/.config/nix/nix.config~ file (create it if it doesn't exist)
+    and add these lines if they don't already exist:
+
+    #+BEGIN_SRC
+    extra-experimental-features = nix-command flakes
+    #+END_SRC
+*** Building the package
+    ~nix build~ will build the package and put it into ~result/~. When you first
+    do this it'll need to download a bunch of dependencies (including the
+    Haskell compiler), so if you're invoking this for the first time try to
+    avoid being on a metered connection.
+*** Developing the package
+    Invoking ~nix develop~ will drop you into a developer shell with some
+    additional developer dependencies like the [[https://github.com/haskell/haskell-language-server][Haskell Language Server]]. If you
+    want to add more, you can always install them with Nix. If they're generally
+    useful things that will be useful for all or most developers on this
+    project, consider adding them to the ~devShell~ package
+*** Install Haskell support for your preferred editor (optional, but recommended)
+    The developer shell already includes the [[https://github.com/haskell/haskell-language-server][Haskell Language Server]]. This means
+    you can code code completion, documentation and inline-types in pretty much
+    any editor that has LSP support.
