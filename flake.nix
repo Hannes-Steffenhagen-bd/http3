@@ -26,6 +26,7 @@
             buildInputs = with haskellPackages;
               [ cabal-install
                 hoogle
+                ormolu
                 haskell-language-server
               ];
             inputsFrom = [self.packages.${system}.${packageName}.env];

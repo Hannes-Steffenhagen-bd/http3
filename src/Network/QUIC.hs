@@ -1,19 +1,15 @@
-{- |
-Supposed to be an implementation of QUIC - or at least the bits that are
-necessary for HTTP3 (which I'm pretty sure is most of it).
-
-Not production ready, not expected to become production ready at any point.
-Proceed at your own peril.
--}
-module Network.QUIC
-where
+-- |
+-- Supposed to be an implementation of QUIC - or at least the bits that are
+-- necessary for HTTP3 (which I'm pretty sure is most of it).
+--
+-- Not production ready, not expected to become production ready at any point.
+-- Proceed at your own peril.
+module Network.QUIC where
 
 import Data.Bits
-import Data.Word(Word64)
-
+import Data.Text (Text)
+import Data.Word (Word64)
 import qualified Network.Socket as N
-
-import Data.Text(Text)
 
 data StreamInitiator = ClientInitiated | ServerInitiated
   deriving (Eq, Show)
@@ -21,11 +17,11 @@ data StreamInitiator = ClientInitiated | ServerInitiated
 data StreamDirection = Unidirectional | Bidirectional
   deriving (Eq, Show)
 
-newtype Word62 = Word62 { w62ToW64 :: Word64 }
+newtype Word62 = Word62 {w62ToW64 :: Word64}
   deriving (Eq, Show)
-  deriving newtype Num
+  deriving newtype (Num)
 
-newtype StreamId = StreamId { streamIdToWord :: Word62 }
+newtype StreamId = StreamId {streamIdToWord :: Word62}
 
 -- | Which version of the QUIC protocol we support
 -- Right now there's only 1, which we try to support here.
@@ -43,7 +39,8 @@ streamInitiator :: StreamId -> StreamInitiator
 streamInitiator id
   | serverInitiated = ServerInitiated
   | otherwise = ClientInitiated
-  where serverInitiated =  w62ToW64 (streamIdToWord id) .&. 0b01 == 0b01
+  where
+    serverInitiated = w62ToW64 (streamIdToWord id) .&. 0b01 == 0b01
 
 -- | Uni or bidirectional? (determined by 2nd LSB)
 -- Examples:
@@ -56,4 +53,5 @@ streamDirection :: StreamId -> StreamDirection
 streamDirection id
   | unidirectional = Unidirectional
   | otherwise = Bidirectional
-  where unidirectional = w62ToW64 (streamIdToWord id) .&. 0b10 == 0b10
+  where
+    unidirectional = w62ToW64 (streamIdToWord id) .&. 0b10 == 0b10
