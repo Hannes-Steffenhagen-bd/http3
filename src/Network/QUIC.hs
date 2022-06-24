@@ -6,10 +6,15 @@
 -- Proceed at your own peril.
 module Network.QUIC where
 
+import Control.Monad (forever)
 import Data.Bits
+import qualified Data.ByteString as B
 import Data.Text (Text)
+import qualified Data.Text.Encoding as T
+import qualified Data.Text.IO as T
 import Data.Word (Word64)
 import qualified Network.Socket as N
+import qualified Network.Socket.ByteString as N
 
 data StreamInitiator = ClientInitiated | ServerInitiated
   deriving (Eq, Show)
@@ -55,3 +60,23 @@ streamDirection id
   | otherwise = Bidirectional
   where
     unidirectional = w62ToW64 (streamIdToWord id) .&. 0b10 == 0b10
+
+server :: Int -> IO ()
+server port = do
+  sock <- N.socket N.AF_INET6 N.Datagram N.defaultProtocol
+  addr : _ <- N.getAddrInfo (Just N.defaultHints {N.addrFamily = N.AF_INET6, N.addrSocketType = N.Datagram}) (Just "::1") (Just $ show port)
+  N.bind sock (N.addrAddress addr)
+  forever $ do
+    result <- N.recvFrom sock 4096
+    print result
+
+client :: Int -> IO ()
+client port = do
+  sock <- N.socket N.AF_INET6 N.Datagram N.defaultProtocol
+  addr : _ <- N.getAddrInfo (Just N.defaultHints {N.addrFamily = N.AF_INET6, N.addrSocketType = N.Datagram}) (Just "::1") Nothing
+  sendAddr : _ <- N.getAddrInfo (Just N.defaultHints {N.addrFamily = N.AF_INET6, N.addrSocketType = N.Datagram}) (Just "::1") (Just $ show port)
+  N.bind sock (N.addrAddress addr)
+  forever $ do
+    t <- T.getLine
+    let dat = T.encodeUtf8 t
+    N.sendTo sock dat (N.addrAddress sendAddr)

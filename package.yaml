@@ -13,6 +13,7 @@ default-extensions:
 - DerivingStrategies
 - GeneralizedNewtypeDeriving
 - ViewPatterns
+- OverloadedStrings
 
 library:
   source-dirs: src
